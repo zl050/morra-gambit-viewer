@@ -1,0 +1,21 @@
+{
+  "name": "smith-morra-repertoire-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Interactive static site for studying a curated Smith-Morra Gambit opening repertoire.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "packageManager": "pnpm@11.6.0",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "chessground": "^9.2.1"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0"
+  }
+}

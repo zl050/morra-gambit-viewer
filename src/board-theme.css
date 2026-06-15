@@ -1,0 +1,106 @@
+/* Board color themes for chessground.
+ *
+ * We deliberately do NOT import chessground's bundled brown theme. Instead both
+ * the default blue board (from the reference image) and the classic brown board
+ * are defined here as CSS-variable sets, selected by a `theme-blue` /
+ * `theme-brown` class on the root <html> element (toggled by the #board-theme
+ * switcher in app.js, persisted to localStorage). Square base colors, interactive
+ * highlights, and coordinate-label colors are all derived from these variables.
+ * chessground.base.css (structure) and chessground.cburnett.css (pieces) are
+ * still imported in app.js.
+ */
+
+:root.theme-blue {
+  --board-light: #dee3e6;
+  --board-dark: #8ca2ad;
+  --board-last-move: rgba(255, 213, 79, 0.5);
+  --board-selected: rgba(255, 170, 40, 0.55);
+  --board-dest: rgba(20, 40, 80, 0.45);
+  --board-dest-oc: rgba(20, 40, 80, 0.3);
+}
+
+:root.theme-brown {
+  --board-light: #f0d9b5;
+  --board-dark: #b58863;
+  --board-last-move: rgba(155, 199, 0, 0.41);
+  --board-selected: rgba(20, 85, 30, 0.5);
+  --board-dest: rgba(20, 85, 30, 0.5);
+  --board-dest-oc: rgba(20, 85, 0, 0.3);
+
+  /* Warm the surrounding chrome (bottom nav bar) to match the wooden board. */
+  --nav-bg: #2e251d;
+  --nav-border: #463a2d;
+  --nav-fg: #d9c9b3;
+  --nav-hover-bg: #3b3024;
+}
+
+/* The resize grip echoes the active accent: blue by default, wood on brown. */
+:root.theme-brown .board-resize {
+  background: linear-gradient(135deg, transparent 0 50%, #9c6a3c 50% 100%);
+}
+
+/* Square base colors: a two-color checkerboard built from a 2x2-square conic
+   tile repeated to 8x8, so the light and dark shades can be chosen freely
+   (chessground's bundled themes tie the dark square to a tint of the light). */
+.board-frame cg-board {
+  background-color: var(--board-light);
+  background-image: conic-gradient(
+    var(--board-dark) 0deg 90deg,
+    var(--board-light) 90deg 180deg,
+    var(--board-dark) 180deg 270deg,
+    var(--board-light) 270deg 360deg
+  );
+  background-size: 25% 25%;
+}
+
+/* Interactive square highlights. */
+cg-board square.move-dest {
+  background: radial-gradient(var(--board-dest) 22%, rgba(0, 0, 0, 0) 0);
+}
+cg-board square.oc.move-dest {
+  background: radial-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 80%, var(--board-dest-oc) 80%);
+}
+cg-board square.move-dest:hover {
+  background: var(--board-selected);
+}
+cg-board square.last-move {
+  background-color: var(--board-last-move);
+}
+cg-board square.selected {
+  background-color: var(--board-selected);
+}
+cg-board square.premove-dest {
+  background: radial-gradient(rgba(20, 30, 85, 0.5) 22%, rgba(0, 0, 0, 0) 0);
+}
+cg-board square.current-premove {
+  background-color: rgba(20, 30, 85, 0.5);
+}
+cg-board square.check {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 0, 0, 1) 0%,
+    rgba(231, 0, 0, 1) 25%,
+    rgba(169, 0, 0, 0) 89%,
+    rgba(158, 0, 0, 0) 100%
+  );
+}
+
+/* Coordinate label colors — dark text on light squares, light text on dark
+   squares (these contrast values read well on both themes). */
+.orientation-white .ranks :nth-child(odd),
+.orientation-white .files :nth-child(even),
+.orientation-black .ranks :nth-child(even),
+.orientation-black .files :nth-child(odd),
+coords.squares:nth-of-type(odd) :nth-child(even),
+coords.squares:nth-of-type(even) :nth-child(odd) {
+  color: rgba(72, 72, 72, 0.8);
+}
+
+.orientation-white .ranks :nth-child(even),
+.orientation-white .files :nth-child(odd),
+.orientation-black .ranks :nth-child(odd),
+.orientation-black .files :nth-child(even),
+coords.squares:nth-of-type(odd) :nth-child(odd),
+coords.squares:nth-of-type(even) :nth-child(even) {
+  color: rgba(255, 255, 255, 0.8);
+}

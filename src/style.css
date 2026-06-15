@@ -1,0 +1,620 @@
+:root {
+  color-scheme: light;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #1e2328;
+  background: #ffffff;
+  --border: #d8dee6;
+  --muted: #66707a;
+  --panel: #f7f8fa;
+  --accent: #2f5f9f;
+  --accent-soft: #e8f0fb;
+  --mainline: #101820;
+  /* Bottom navigation bar — a deep navy tuned to sit beneath the blue board. */
+  --nav-bg: #1e2a38;
+  --nav-border: #2d3c4e;
+  --nav-fg: #c3cdda;
+  --nav-hover-bg: #28394d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 420px minmax(360px, 1fr) minmax(300px, 420px);
+  gap: 18px;
+  height: 100vh;
+  padding: 18px;
+  overflow: hidden;
+}
+
+.sidebar,
+.tree-panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  height: calc(100vh - 36px);
+}
+
+.sidebar {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+}
+
+.site-header,
+.chapter-panel,
+.tools-panel,
+.description-panel {
+  padding: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.description-panel {
+  border-bottom: 0;
+  align-self: start;
+}
+
+.panel-label {
+  margin-bottom: 10px;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 8px;
+  color: var(--mainline);
+  font-size: clamp(1.4rem, 1.15rem + 1vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.subtitle {
+  margin-bottom: 0;
+  max-width: 36ch;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+h2 {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+select {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e2328;
+}
+
+#description-text {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #3c4750;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tool-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--mainline);
+  text-align: left;
+}
+
+.tool-bar:hover,
+.tool-bar:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tool-bar[aria-expanded='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.tool-icon {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+}
+
+.tool-label {
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Side indicator (White / Black) on the Quiz-mode and Challenge-bot rows: a
+   coin whose color IS the side it trains, with a contrasting pawn emblem and an
+   uppercase text label so the intended side reads at a glance. */
+.side-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.side-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.side-coin {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 1.5px solid;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.side-coin svg {
+  width: 16px;
+  height: 16px;
+}
+
+.side-badge--white .side-coin {
+  background: #ffffff;
+  border-color: #2a2f35;
+}
+
+.side-badge--white .side-coin svg * {
+  fill: #2a2f35;
+  stroke: #2a2f35;
+}
+
+.side-badge--black .side-coin {
+  background: #23282e;
+  border-color: #23282e;
+}
+
+.side-badge--black .side-coin svg * {
+  fill: #eef1f4;
+  stroke: #eef1f4;
+}
+
+/* Board-theme switcher: two swatches (blue / brown), the active one ringed. */
+.theme-swatches {
+  display: inline-flex;
+  gap: 5px;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.theme-swatch {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid transparent;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+.theme-swatch[data-theme='blue'] {
+  background: #8ca2ad;
+}
+
+.theme-swatch[data-theme='brown'] {
+  background: #b58863;
+}
+
+.theme-swatch.is-active {
+  border-color: var(--accent);
+}
+
+.tool-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tool-row[hidden] {
+  display: none;
+}
+
+.tool-status {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--mainline);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.tool-status[hidden] {
+  display: none;
+}
+
+.tool-status[data-kind='success'] {
+  border-color: #9fc6a3;
+  background: #eaf6ec;
+  color: #1f5c2e;
+}
+
+.tool-status[data-kind='error'] {
+  border-color: #e3a8a8;
+  background: #fbecec;
+  color: #8a2424;
+}
+
+.tool-status[data-kind='similar'] {
+  border-color: #e0c178;
+  background: #fdf6e3;
+  color: #8a6d1f;
+}
+
+.tool-status[data-kind='info'] {
+  border-color: var(--border);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.tool-input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e2328;
+  font: inherit;
+}
+
+.tool-copy {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.tool-copy svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tool-copy:hover,
+.tool-copy:focus-visible {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.tool-text {
+  flex: 1;
+  margin: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--mainline);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.tool-text a {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Stack the challenge text and its work-in-progress notice vertically. */
+#challenge-row {
+  flex-direction: column;
+}
+
+.tool-wip {
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #e0a96d;
+  border-radius: 6px;
+  background: #fff4e5;
+  color: #9a5b00;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.board-shell {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.board-frame {
+  position: relative;
+  width: min(85.8vh, 100%);
+  max-width: 792px;
+  aspect-ratio: 1;
+}
+
+.board {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border);
+}
+
+.cg-wrap {
+  width: 100%;
+  height: 100%;
+}
+
+.board-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, transparent 0 50%, var(--accent) 50% 100%);
+  opacity: 0.5;
+  cursor: nwse-resize;
+  touch-action: none;
+  z-index: 5;
+}
+
+.board-resize:hover {
+  opacity: 0.9;
+}
+
+.cg-wrap coords.files coord {
+  text-transform: lowercase;
+}
+
+.notation-move,
+.notation-move-inline {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--mainline);
+}
+
+.notation-move:hover,
+.notation-move-inline:hover {
+  border-color: var(--accent);
+}
+
+.notation-move.selected,
+.notation-move-inline.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.tree-panel {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tree-panel[hidden] {
+  visibility: hidden;
+}
+
+.tree {
+  overflow: auto;
+  padding: 0 0 14px;
+}
+
+.notation-table {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) minmax(0, 1fr);
+  align-content: start;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+}
+
+.notation-number,
+.notation-cell {
+  min-height: 36px;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.notation-number {
+  display: grid;
+  place-items: center;
+  color: #8a939c;
+  font-size: 0.9rem;
+  background: #f1f3f5;
+}
+
+.notation-cell {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.notation-move {
+  max-width: 100%;
+  width: 100%;
+  padding: 6px 12px;
+  text-align: left;
+  color: #24303a;
+  font-size: 1.05rem;
+}
+
+.notation-move.selected {
+  border-radius: 0;
+}
+
+.notation-empty {
+  grid-column: 1 / -1;
+  padding: 18px;
+  color: var(--muted);
+}
+
+.notation-flow {
+  padding: 12px 14px 4px;
+  line-height: 1.9;
+}
+
+.notation-move-inline {
+  padding: 2px 5px;
+  font-size: 1.02rem;
+  color: var(--mainline);
+}
+
+.notation-move-inline.mainline {
+  font-weight: 700;
+}
+
+.notation-move-inline.sideline {
+  font-size: 0.94rem;
+  font-style: italic;
+  color: #68727d;
+}
+
+.variation-box {
+  display: block;
+  margin: 6px 0 6px 10px;
+  padding: 5px 8px 5px 10px;
+  border-left: 3px solid #c5d2e4;
+  border-radius: 0 6px 6px 0;
+  background: #f1f4f8;
+}
+
+.variation-box .variation-box {
+  border-left-color: #d4dbe4;
+  background: #e9edf2;
+}
+
+.repertoire-controls {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--border);
+  background: var(--nav-bg);
+}
+
+.repertoire-controls > button {
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+  border: 0;
+  border-right: 1px solid var(--nav-border);
+  background: var(--nav-bg);
+  color: var(--nav-fg);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.repertoire-controls > button:hover:not(:disabled),
+.repertoire-controls > button:focus-visible {
+  background: var(--nav-hover-bg);
+  color: #ffffff;
+}
+
+.repertoire-controls > button:last-of-type {
+  border-right: 0;
+}
+
+@media (max-width: 1160px) {
+  #app {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+  }
+
+  .sidebar,
+  .tree-panel {
+    height: auto;
+    min-height: auto;
+  }
+
+  .sidebar {
+    grid-template-rows: auto;
+  }
+
+  .description-panel {
+    align-self: auto;
+  }
+
+  .tree-panel {
+    max-height: 70vh;
+  }
+
+  .tree-panel[hidden] {
+    display: none;
+  }
+
+  .tree {
+    min-height: 260px;
+  }
+
+  .board-frame {
+    width: min(92vw, 748px);
+  }
+}
