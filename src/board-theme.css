@@ -1,17 +1,17 @@
 /* Board color themes for chessground.
  *
  * We deliberately do NOT import chessground's bundled brown theme. Instead both
- * the default blue board (from the reference image) and the classic brown board
- * are defined here as CSS-variable sets, selected by a `theme-blue` /
- * `theme-brown` class on the root <html> element (toggled by the #board-theme
- * switcher in app.js, persisted to localStorage). Square base colors, interactive
- * highlights, and coordinate-label colors are all derived from these variables.
+ * the default blue board and the classic brown board are defined here as
+ * CSS-variable sets, selected by a `theme-blue` / `theme-brown` class on the
+ * root <html> element (toggled by the Board option in the Display settings menu
+ * in app.js, persisted to localStorage). Square base colors and interactive
+ * highlights are all derived from these variables.
  * chessground.base.css (structure) and chessground.cburnett.css (pieces) are
  * still imported in app.js.
  */
 
 :root.theme-blue {
-  --board-light: #dee3e6;
+  --board-light: #dadee1;
   --board-dark: #8ca2ad;
   --board-last-move: rgba(255, 213, 79, 0.5);
   --board-selected: rgba(255, 170, 40, 0.55);
@@ -27,16 +27,46 @@
   --board-dest: rgba(20, 85, 30, 0.5);
   --board-dest-oc: rgba(20, 85, 0, 0.3);
 
-  /* Warm the surrounding chrome (bottom nav bar) to match the wooden board. */
+  /* Warm the surrounding chrome (nav bar) to match the wooden board. */
   --nav-bg: #2e251d;
   --nav-border: #463a2d;
   --nav-fg: #d9c9b3;
   --nav-hover-bg: #3b3024;
 }
 
-/* The resize grip echoes the active accent: blue by default, wood on brown. */
-:root.theme-brown .board-resize {
-  background: linear-gradient(135deg, transparent 0 50%, #9c6a3c 50% 100%);
+/* Light appearance + brown board: warm the accent from the default blue to brown. */
+:root.theme-brown:not(.appearance-dark) {
+  --accent: #8c5a2a;
+  --accent-soft: #f2e0cc;
+}
+
+/* Dark appearance + brown board: replace the blue-tinted dark UI chrome with
+   warm espresso tones that feel continuous with the wooden board. Nav vars are
+   intentionally omitted — they inherit the correct warm values from theme-brown
+   above (same specificity, later in cascade). */
+:root.appearance-dark.theme-brown {
+  color: #ecdccc;
+  background: #1b170f;
+  --bg: #1b170f;
+  --surface: #271f15;
+  --surface-elevated: #322617;
+  --panel: #1e1710;
+  --border: #463726;
+  --border-strong: #5a4732;
+  --edge-highlight: rgba(255, 235, 210, 0.05);
+  --muted: #9a8a76;
+  --accent: #c8894e;
+  --accent-soft: #422b18;
+  --mainline: #ecdccc;
+  --description-fg: #b4a492;
+  --notation-num-bg: #17140d;
+  --notation-num-fg: #7a6a58;
+  --notation-move-fg: #c4b09a;
+  --sideline-fg: #7a6a58;
+  --variation-bg: #251e14;
+  --variation-border: #4a3828;
+  --variation-nested-bg: #2d2419;
+  --variation-nested-border: #584438;
 }
 
 /* Square base colors: a two-color checkerboard built from a 2x2-square conic
@@ -85,22 +115,3 @@ cg-board square.check {
   );
 }
 
-/* Coordinate label colors — dark text on light squares, light text on dark
-   squares (these contrast values read well on both themes). */
-.orientation-white .ranks :nth-child(odd),
-.orientation-white .files :nth-child(even),
-.orientation-black .ranks :nth-child(even),
-.orientation-black .files :nth-child(odd),
-coords.squares:nth-of-type(odd) :nth-child(even),
-coords.squares:nth-of-type(even) :nth-child(odd) {
-  color: rgba(72, 72, 72, 0.8);
-}
-
-.orientation-white .ranks :nth-child(even),
-.orientation-white .files :nth-child(odd),
-.orientation-black .ranks :nth-child(odd),
-.orientation-black .files :nth-child(even),
-coords.squares:nth-of-type(odd) :nth-child(odd),
-coords.squares:nth-of-type(even) :nth-child(even) {
-  color: rgba(255, 255, 255, 0.8);
-}

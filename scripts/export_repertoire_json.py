@@ -18,8 +18,7 @@ try:
     import chess.pgn
 except ImportError as exc:  # pragma: no cover - exercised by environment setup
     raise SystemExit(
-        "Missing dependency: python-chess. Install it with "
-        "`python -m pip install python-chess`."
+        "Missing dependency: python-chess."
     ) from exc
 
 
@@ -27,6 +26,16 @@ PGN_DIR = ROOT / "data" / "pgn"
 OUTPUT_PATH = ROOT / "data" / "repertoire.json"
 REQUIRED_HEADERS = ("Event", "White", "Black", "Result")
 COMMENT_LIMIT = 320
+
+# Standard PGN move-quality suffix annotations (Numeric Annotation Glyphs).
+# python-chess parses "?!" etc. out of the move text into node.nags rather
+# than keeping it in the SAN, so it has to be re-attached here for display.
+NAG_SUFFIXES = {
+    chess.pgn.NAG_GOOD_MOVE: "!",
+    chess.pgn.NAG_MISTAKE: "?",
+    chess.pgn.NAG_SPECULATIVE_MOVE: "!?",
+    chess.pgn.NAG_DUBIOUS_MOVE: "?!",
+}
 
 
 @dataclass(frozen=True)
@@ -37,7 +46,7 @@ class ExportContext:
 
 def main() -> int:
     chapters = []
-    for pgn_path in sorted(PGN_DIR.glob("smg_chp*_mainlines.pgn"), key=chapter_sort_key):
+    for pgn_path in sorted(PGN_DIR.glob("smg_ch*.pgn"), key=chapter_sort_key):
         chapters.append(export_chapter(pgn_path))
 
     if not chapters:
@@ -89,7 +98,7 @@ def export_chapter(pgn_path: Path) -> dict:
         "title": game.headers["Black"],
         "sourcePgn": pgn_path.name,
         "rootFen": root_board.fen(),
-        "description": chapter_description(game),
+        "description": chapter_description(pgn_path, game),
         "nodes": context.nodes,
     }
 
@@ -120,6 +129,10 @@ def walk_variations(parent_node, board, parent_id: str, context: ExportContext, 
         if comment:
             payload["description"] = comment
 
+        suffix = "".join(NAG_SUFFIXES[nag] for nag in sorted(child_node.nags) if nag in NAG_SUFFIXES)
+        if suffix:
+            payload["sanSuffix"] = suffix
+
         context.nodes.append(payload)
         parent_payload["children"].append(child_id)
         walk_variations(child_node, next_board, child_id, context, child_is_mainline)
@@ -137,35 +150,23 @@ def validate_headers(pgn_path: Path, game) -> None:
 
 
 def chapter_id_from_path(pgn_path: Path) -> str:
-    match = re.search(r"smg_chp(\d+)_mainlines\.pgn$", pgn_path.name)
+    match = re.search(r"smg_ch(\d+)\.pgn$", pgn_path.name)
     if not match:
         raise ValueError(f"Unexpected PGN filename: {pgn_path.name}")
     return f"ch{int(match.group(1))}"
 
 
 def chapter_sort_key(pgn_path: Path) -> int:
-    return int(re.search(r"smg_chp(\d+)_mainlines\.pgn$", pgn_path.name).group(1))
+    return int(re.search(r"smg_ch(\d+)\.pgn$", pgn_path.name).group(1))
 
 
-def chapter_description(game) -> str:
-    """Chapter description: the PGN game's root comment when present (the curated
-    source of truth for chapter-specific prose), else a generated fallback."""
+def chapter_description(pgn_path: Path, game) -> str:
+    """Chapter description: the PGN game's root comment (the curated source of
+    truth for chapter-specific prose). Required — there is no generated fallback."""
     comment = " ".join(game.comment.split())
-    if comment:
-        return comment
-    return fallback_chapter_description(game.headers)
-
-
-def fallback_chapter_description(headers) -> str:
-    title = headers["Black"]
-    event = headers["Event"]
-    if "Declined" in title or "From 2.d4" in event:
-        focus = "Smith-Morra declined structures and early deviations"
-    elif "3...d3" in event:
-        focus = "the 3...d3 sideline and White's development plan"
-    else:
-        focus = "accepted Smith-Morra positions, initiative, and Black's defensive setup"
-    return f"Study {title}. Follow the chapter tree to compare {focus}."
+    if not comment:
+        raise ValueError(f"{pgn_path.name}: missing a root comment to use as the chapter description")
+    return comment
 
 
 def normalize_comment(comment: str) -> str:
@@ -173,7 +174,7 @@ def normalize_comment(comment: str) -> str:
     if not text:
         return ""
     if len(text) > COMMENT_LIMIT:
-        raise ValueError("PGN comment is too long for MVP export; keep node descriptions short and original")
+        raise ValueError("PGN comment too long")
     return text
 
 

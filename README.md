@@ -1,8 +1,8 @@
 # Smith-Morra Repertoire Viewer
 
 A standalone static website for browsing a curated Smith-Morra Gambit repertoire
-by chapter, on an interactive board. Select a chapter, step through the lines,
-read the annotations, search by PGN/FEN, and practise White's moves in quiz mode.
+by chapter, on an interactive board. Select a chapter or search by PGN/FEN, step
+through the lines and practise White's moves in quiz mode.
 
 ## Repertoire source & acknowledgements
 
@@ -33,11 +33,6 @@ pnpm run build
 
 PGN files in `data/pgn/` are the editable source of truth. Run
 `scripts/export_repertoire_json.py` to regenerate `data/repertoire.json`.
-
-- **Chapter description** comes from each PGN game's root comment — the `{...}`
-  block placed between the headers and the first move. If a game has no root
-  comment, a generated fallback is used.
-- **Move annotations** come from the comment on the corresponding move.
 
 ## License & attribution
 

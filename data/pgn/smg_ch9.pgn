@@ -1,0 +1,8 @@
+[Event "SMG Ch9"]
+[White "Smith-Morra Gambit"]
+[Black "Chapter 9 Taylor's Temple of Doom"]
+[Result "*"]
+
+{In Taylor's treacherous Temple of Morra Doom, after ...Nc6, d6, a6 and Nf6, Black threatens to dissolve White's activity with ...Bg4 and Ne5.}
+1. e4 c5 2. d4 cxd4 3. c3 dxc3 4. Nxc3 Nc6 5. Nf3 d6 6. Bc4 a6 (6... Nf6 7. e5 dxe5 8. Qxd8+ Nxd8 (8... Kxd8 9. Ng5) 9. Nb5) 7. O-O Nf6 (7... Bg4 8. Bxf7+) 8. Bf4 (8. b4 Bg4 9. b5 Bxf3 10. gxf3 Ne5 11. bxa6) (8. h3?! e6) 8... Bg4 (8... b5 9. Bxf7+ Kxf7 10. e5) (8... g6 9. e5) 9. h3 Bxf3 (9... Bh5 10. g4 Bg6 11. Qe2) 10. Qxf3 e6 11. Rfd1 *
+

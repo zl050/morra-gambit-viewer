@@ -1,0 +1,19 @@
+/* Merida piece set overrides.
+   Chessground adds .cg-wrap to the element passed to Chessground() — so #board
+   IS .cg-wrap. Pieces live at #board > cg-container > cg-board > piece.*.*.
+   Correct selector: #board.pieces-merida piece.*.* (no inner .cg-wrap step).
+   Specificity (1-1-2) beats the default cburnett rule (.cg-wrap piece.*.*) at (0-1-2). */
+
+#board.pieces-merida piece.pawn.white   { background-image: url('/piece/merida/wP.svg'); }
+#board.pieces-merida piece.rook.white   { background-image: url('/piece/merida/wR.svg'); }
+#board.pieces-merida piece.knight.white { background-image: url('/piece/merida/wN.svg'); }
+#board.pieces-merida piece.bishop.white { background-image: url('/piece/merida/wB.svg'); }
+#board.pieces-merida piece.queen.white  { background-image: url('/piece/merida/wQ.svg'); }
+#board.pieces-merida piece.king.white   { background-image: url('/piece/merida/wK.svg'); }
+
+#board.pieces-merida piece.pawn.black   { background-image: url('/piece/merida/bP.svg'); }
+#board.pieces-merida piece.rook.black   { background-image: url('/piece/merida/bR.svg'); }
+#board.pieces-merida piece.knight.black { background-image: url('/piece/merida/bN.svg'); }
+#board.pieces-merida piece.bishop.black { background-image: url('/piece/merida/bB.svg'); }
+#board.pieces-merida piece.queen.black  { background-image: url('/piece/merida/bQ.svg'); }
+#board.pieces-merida piece.king.black   { background-image: url('/piece/merida/bK.svg'); }

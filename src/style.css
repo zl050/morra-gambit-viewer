@@ -4,17 +4,80 @@
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #1e2328;
   background: #ffffff;
+  --bg: #ffffff;
+  --surface: #ffffff;
   --border: #d8dee6;
   --muted: #66707a;
   --panel: #f7f8fa;
   --accent: #2f5f9f;
   --accent-soft: #e8f0fb;
+  --border-strong: #b5c0cd;
+  --hover-bg: rgba(16, 24, 32, 0.04);
   --mainline: #101820;
-  /* Bottom navigation bar — a deep navy tuned to sit beneath the blue board. */
+  --description-fg: #3c4750;
+  --notation-num-bg: #f1f3f5;
+  --notation-num-fg: #8a939c;
+  --notation-move-fg: #24303a;
+  --sideline-fg: #68727d;
+  --variation-bg: #f1f4f8;
+  --variation-border: #c5d2e4;
+  --variation-nested-bg: #e9edf2;
+  --variation-nested-border: #d4dbe4;
   --nav-bg: #1e2a38;
   --nav-border: #2d3c4e;
   --nav-fg: #c3cdda;
   --nav-hover-bg: #28394d;
+  /* Quiz feedback box (#quiz-status), keyed by data-kind. */
+  --status-success-bg: #eaf6ec;
+  --status-success-border: #9fc6a3;
+  --status-success-fg: #1f5c2e;
+  --status-error-bg: #fbecec;
+  --status-error-border: #e3a8a8;
+  --status-error-fg: #8a2424;
+  --status-similar-bg: #fdf6e3;
+  --status-similar-border: #e0c178;
+  --status-similar-fg: #8a6d1f;
+}
+
+:root.appearance-dark {
+  color-scheme: dark;
+  color: #c9d1da;
+  background: #0b0e14;
+  --bg: #0b0e14;
+  --surface: #1d2430;
+  --surface-elevated: #262e3b;
+  --border: #2b3340;
+  --border-strong: #3d4756;
+  --muted: #9aa4b1;
+  --panel: #141922;
+  --accent: #6cb0ff;
+  --accent-soft: #15294a;
+  --hover-bg: rgba(255, 255, 255, 0.04);
+  --mainline: #e6edf3;
+  --edge-highlight: rgba(255, 255, 255, 0.05);
+  --description-fg: #9eabb8;
+  --notation-num-bg: #131820;
+  --notation-num-fg: #768390;
+  --notation-move-fg: #adbac7;
+  --sideline-fg: #768390;
+  --variation-bg: #22272e;
+  --variation-border: #3d444d;
+  --variation-nested-bg: #2a3139;
+  --variation-nested-border: #444c56;
+  --nav-bg: #161b24;
+  --nav-border: #2b3340;
+  --nav-fg: #9aa4b1;
+  --nav-hover-bg: #232b37;
+  --panel-shadow: rgba(0, 0, 0, 0.45);
+  --status-success-bg: #16201a;
+  --status-success-border: #3d6b48;
+  --status-success-fg: #93c5a1;
+  --status-error-bg: #251818;
+  --status-error-border: #7a4444;
+  --status-error-fg: #d59a9a;
+  --status-similar-bg: #211d12;
+  --status-similar-border: #786633;
+  --status-similar-fg: #c9ad72;
 }
 
 * {
@@ -25,7 +88,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--bg);
 }
 
 button,
@@ -45,6 +108,10 @@ button:disabled {
 #app {
   display: grid;
   grid-template-columns: 420px minmax(360px, 1fr) minmax(300px, 420px);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'topbar topbar topbar'
+    'sidebar board tree';
   gap: 18px;
   height: 100vh;
   padding: 18px;
@@ -55,25 +122,72 @@ button:disabled {
 .tree-panel {
   border: 1px solid var(--border);
   background: var(--panel);
-  height: calc(100vh - 36px);
+  min-height: 0;
 }
 
 .sidebar {
+  grid-area: sidebar;
   display: grid;
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: auto auto;
+  overflow-y: auto;
 }
 
-.site-header,
 .chapter-panel,
 .tools-panel,
 .description-panel {
-  padding: 18px;
+  padding: 14px;
   border-bottom: 1px solid var(--border);
+}
+
+/* Clear visual break between the chapter picker and the move list (same frame):
+   a lifted white band casting a soft shadow onto the tree below. */
+.chapter-panel {
+  position: relative;
+  z-index: 1;
+  background: var(--surface-elevated, var(--surface));
+  /* Top-edge highlight + drop shadow reads as "raised" on dark surfaces. */
+  box-shadow:
+    inset 0 1px 0 var(--edge-highlight, transparent),
+    0 3px 6px var(--panel-shadow, rgba(16, 24, 32, 0.07));
 }
 
 .description-panel {
   border-bottom: 0;
   align-self: start;
+}
+
+/* Padding + matching negative margin gives the highlight ring below some
+   breathing room without shifting the visible Notes text position. */
+.notes-block {
+  margin: -8px;
+  padding: 8px;
+}
+
+/* One-shot flash animation on first home-page move. After it completes,
+   is-highlighted takes over until a chapter is selected.
+   Added/removed in app.js (emphasizeNotesOnce).
+   Scoped to .notes-block so the ring/pulse covers only the Notes. */
+.notes-block.is-emphasized {
+  border-radius: 8px;
+  animation: notes-emphasis 1.3s ease-out 1;
+}
+
+.notes-block.is-highlighted {
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px var(--accent);
+  transition: box-shadow 0.3s ease;
+}
+
+@keyframes notes-emphasis {
+  0% {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  25% {
+    box-shadow: 0 0 0 5px var(--accent);
+  }
+  100% {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
 }
 
 .panel-label {
@@ -98,11 +212,9 @@ h1 {
 
 .subtitle {
   margin-bottom: 0;
-  max-width: 36ch;
   color: var(--muted);
   font-size: 0.95rem;
   line-height: 1.5;
-  text-wrap: pretty;
 }
 
 h2 {
@@ -117,20 +229,46 @@ select {
   padding: 9px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #ffffff;
-  color: #1e2328;
+  background: var(--surface);
+  color: var(--mainline);
 }
 
 #description-text {
   margin: 0;
   padding: 12px 14px;
   border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
   border-radius: 8px;
-  background: #ffffff;
-  color: #3c4750;
+  background: var(--surface);
+  color: var(--description-fg);
   font-size: 0.95rem;
   line-height: 1.55;
+}
+
+/* Home-page repertoire source / acknowledgements, shown under the Notes text. */
+.notes-ack {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.notes-ack[hidden] {
+  display: none;
+}
+
+.notes-ack-title {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mainline);
+}
+
+.notes-ack p {
+  margin: 0;
 }
 
 .tool-list {
@@ -147,15 +285,15 @@ select {
   padding: 11px 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #ffffff;
+  background: var(--surface);
   color: var(--mainline);
   text-align: left;
 }
 
 .tool-bar:hover,
 .tool-bar:focus-visible {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--border-strong);
+  background: var(--hover-bg);
 }
 
 .tool-bar[aria-expanded='true'] {
@@ -177,9 +315,50 @@ select {
   text-overflow: ellipsis;
 }
 
-/* Side indicator (White / Black) on the Quiz-mode and Challenge-bot rows: a
-   coin whose color IS the side it trains, with a contrasting pawn emblem and an
-   uppercase text label so the intended side reads at a glance. */
+/* Boxed ✕ shown next to the label while quiz mode is active. 
+   Toggled in app.js (startQuiz/endQuiz). */
+.quiz-exit-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.quiz-exit-icon[hidden] {
+  display: none;
+}
+
+/* One-shot pulse on the quiz-mode button when quiz mode starts.
+   Added/removed in app.js (startQuiz). */
+.tool-bar.is-emphasized {
+  animation: tool-bar-emphasis 0.5s ease-out 1;
+}
+
+@keyframes tool-bar-emphasis {
+  0% {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  40% {
+    box-shadow: 0 0 0 5px var(--accent);
+  }
+  100% {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+}
+
+/* Persistent ring kept after the pulse settles, for as long as quiz mode is
+   active. Added in app.js (startQuiz), removed in endQuiz. */
+.tool-bar.is-quiz-active {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* Side indicator (White / Black) on the Quiz-mode and Challenge-bot rows. */
 .side-badge {
   display: inline-flex;
   align-items: center;
@@ -231,34 +410,6 @@ select {
   stroke: #eef1f4;
 }
 
-/* Board-theme switcher: two swatches (blue / brown), the active one ringed. */
-.theme-swatches {
-  display: inline-flex;
-  gap: 5px;
-  margin-left: auto;
-  flex: 0 0 auto;
-}
-
-.theme-swatch {
-  width: 15px;
-  height: 15px;
-  border: 1.5px solid transparent;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
-}
-
-.theme-swatch[data-theme='blue'] {
-  background: #8ca2ad;
-}
-
-.theme-swatch[data-theme='brown'] {
-  background: #b58863;
-}
-
-.theme-swatch.is-active {
-  border-color: var(--accent);
-}
-
 .tool-row {
   display: flex;
   gap: 8px;
@@ -273,11 +424,12 @@ select {
   margin: 8px 0 0;
   padding: 8px 10px;
   border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
   border-radius: 6px;
   background: var(--panel);
   color: var(--mainline);
-  font-size: 0.88rem;
-  line-height: 1.4;
+  font-size: 0.90rem;
+  line-height: 1.6;
 }
 
 .tool-status[hidden] {
@@ -285,21 +437,21 @@ select {
 }
 
 .tool-status[data-kind='success'] {
-  border-color: #9fc6a3;
-  background: #eaf6ec;
-  color: #1f5c2e;
+  border-color: var(--status-success-border);
+  background: var(--status-success-bg);
+  color: var(--status-success-fg);
 }
 
 .tool-status[data-kind='error'] {
-  border-color: #e3a8a8;
-  background: #fbecec;
-  color: #8a2424;
+  border-color: var(--status-error-border);
+  background: var(--status-error-bg);
+  color: var(--status-error-fg);
 }
 
 .tool-status[data-kind='similar'] {
-  border-color: #e0c178;
-  background: #fdf6e3;
-  color: #8a6d1f;
+  border-color: var(--status-similar-border);
+  background: var(--status-similar-bg);
+  color: var(--status-similar-fg);
 }
 
 .tool-status[data-kind='info'] {
@@ -308,14 +460,49 @@ select {
   color: var(--accent);
 }
 
+/* Inline buttons for Black's alternative replies inside the quiz feedback box. */
+.quiz-alt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.2em;
+  margin: 5px 8px 2px 2px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--mainline);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.5;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: background 0.12s, border-color 0.12s, box-shadow 0.12s, transform 0.08s;
+}
+
+.quiz-alt-btn:hover,
+.quiz-alt-btn:focus-visible {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.quiz-alt-btn:active {
+  background: var(--accent-soft);
+  box-shadow: none;
+  transform: translateY(1px) scale(0.97);
+}
+
 .tool-input {
   flex: 1;
   min-width: 0;
   padding: 9px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #ffffff;
-  color: #1e2328;
+  background: var(--surface);
+  color: var(--mainline);
   font: inherit;
 }
 
@@ -349,7 +536,7 @@ select {
   padding: 9px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--accent-soft);
+  background: var(--surface);
   color: var(--mainline);
   font-size: 0.92rem;
   line-height: 1.4;
@@ -380,6 +567,7 @@ select {
 }
 
 .board-shell {
+  grid-area: board;
   display: grid;
   align-content: center;
   justify-items: center;
@@ -389,7 +577,7 @@ select {
 
 .board-frame {
   position: relative;
-  width: min(85.8vh, 100%);
+  width: min(80vh, 100%);
   max-width: 792px;
   aspect-ratio: 1;
 }
@@ -397,7 +585,6 @@ select {
 .board {
   width: 100%;
   height: 100%;
-  border: 1px solid var(--border);
 }
 
 .cg-wrap {
@@ -405,25 +592,52 @@ select {
   height: 100%;
 }
 
+/* Suppress text selection while dragging the resize grip (lichess: body.resizing
+   @include prevent-select). */
+body.resizing {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Bottom-right resize grip — ported from lichess's chessground resize handle
+   (lila: ui/lib/css/component/_board-resize.scss). Two fixed-black diagonal
+   slashes on a 22px box overhanging the board corner by 9px; the box becomes a
+   translucent circle (lichess's base accent, fixed regardless of theme) on
+   hover and while dragging (`body.resizing`, set in app.js). */
 .board-resize {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 18px;
-  height: 18px;
-  background: linear-gradient(135deg, transparent 0 50%, var(--accent) 50% 100%);
-  opacity: 0.5;
+  right: -9px;
+  bottom: -9px;
+  width: 22px;
+  height: 22px;
   cursor: nwse-resize;
   touch-action: none;
   z-index: 5;
 }
 
-.board-resize:hover {
-  opacity: 0.9;
+.board-resize::before,
+.board-resize::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 12px;
+  height: 1px;
+  background: #000;
 }
 
-.cg-wrap coords.files coord {
-  text-transform: lowercase;
+.board-resize::before {
+  width: 5px;
+  transform: translate(7px, 8px) rotate(-45deg);
+}
+
+.board-resize::after {
+  transform: translate(1px, 6px) rotate(-45deg);
+}
+
+.board-resize:hover,
+body.resizing .board-resize {
+  border-radius: 50%;
+  background: hsla(22, 100%, 42%, 0.5);
 }
 
 .notation-move,
@@ -436,7 +650,8 @@ select {
 
 .notation-move:hover,
 .notation-move-inline:hover {
-  border-color: var(--accent);
+  border-color: var(--border-strong);
+  background: var(--hover-bg);
 }
 
 .notation-move.selected,
@@ -448,10 +663,154 @@ select {
 }
 
 .tree-panel {
+  grid-area: tree;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   min-width: 0;
   overflow: hidden;
+}
+
+/* Top bar: title / subtitle on the left, the "Display" settings menu on the right. */
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.topbar h1 {
+  margin-bottom: 2px;
+}
+
+.site-header {
+  min-width: 0;
+}
+
+.settings {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+/* Gear + "Display" trigger; the dropdown drops below it and overlays the tree. */
+.settings-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  padding: 9px 20px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--mainline);
+  font-size: 0.95rem;
+}
+
+.settings-display svg {
+  width: 20px;
+  height: 20px;
+}
+
+.settings-display:hover,
+.settings-display:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.settings-display[aria-expanded='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.settings-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  z-index: 30;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 10px 28px rgba(16, 24, 32, 0.18);
+}
+
+.settings-menu[hidden] {
+  display: none;
+}
+
+.settings-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 8px;
+}
+
+.settings-row + .settings-row {
+  border-top: 1px solid var(--border);
+}
+
+.settings-row-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--mainline);
+}
+
+.settings-row-icon .ic {
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+
+.settings-row-icon .ic-piece {
+  width: 20px;
+  height: 20px;
+}
+
+.settings-row-icon .ic.is-shown {
+  display: block;
+}
+
+.settings-row-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--mainline);
+}
+
+.settings-options {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.settings-opt {
+  min-width: 80px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.settings-opt:hover:not(.is-active) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.settings-opt.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .tree-panel[hidden] {
@@ -467,22 +826,22 @@ select {
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr) minmax(0, 1fr);
   align-content: start;
-  background: #ffffff;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
 
 .notation-number,
 .notation-cell {
   min-height: 36px;
-  border-bottom: 1px solid #edf0f3;
+  border-bottom: 1px solid var(--border);
 }
 
 .notation-number {
   display: grid;
   place-items: center;
-  color: #8a939c;
+  color: var(--notation-num-fg);
   font-size: 0.9rem;
-  background: #f1f3f5;
+  background: var(--notation-num-bg);
 }
 
 .notation-cell {
@@ -496,7 +855,7 @@ select {
   width: 100%;
   padding: 6px 12px;
   text-align: left;
-  color: #24303a;
+  color: var(--notation-move-fg);
   font-size: 1.05rem;
 }
 
@@ -528,21 +887,21 @@ select {
 .notation-move-inline.sideline {
   font-size: 0.94rem;
   font-style: italic;
-  color: #68727d;
+  color: var(--sideline-fg);
 }
 
 .variation-box {
   display: block;
   margin: 6px 0 6px 10px;
   padding: 5px 8px 5px 10px;
-  border-left: 3px solid #c5d2e4;
+  border-left: 3px solid var(--variation-border);
   border-radius: 0 6px 6px 0;
-  background: #f1f4f8;
+  background: var(--variation-bg);
 }
 
 .variation-box .variation-box {
-  border-left-color: #d4dbe4;
-  background: #e9edf2;
+  border-left-color: var(--variation-nested-border);
+  background: var(--variation-nested-bg);
 }
 
 .repertoire-controls {
@@ -584,6 +943,12 @@ select {
 @media (max-width: 1160px) {
   #app {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      'topbar'
+      'sidebar'
+      'board'
+      'tree';
     height: auto;
     overflow: visible;
   }

@@ -1,0 +1,7 @@
+[Event "SMG Ch13"]
+[White "Smith-Morra Gambit"]
+[Black "Chapter 13 Morra-Maroczy"]
+[Result "*"]
+
+{The "Maroczy Bind" is set up against 3...d3. Notice White's move order: prophylactic h3 preventing ...Bg4/Ng4, and Nc3 after ...Nf6, avoiding ...Bxc3.}
+1. e4 c5 2. d4 cxd4 3. c3 d3 4. Bxd3 d6 5. c4 Nc6 6. h3 g6 7. Nf3 Bg7 8. O-O Nf6 9. Nc3 O-O 10. Be3 Nd7 11. Rc1 Nc5 12. Bb1 *
