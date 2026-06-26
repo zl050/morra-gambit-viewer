@@ -4,12 +4,14 @@ A standalone static website for browsing a curated Smith-Morra Gambit repertoire
 by chapter, on an interactive board. Select a chapter or search by PGN/FEN, step
 through the lines and practise White's moves in quiz mode.
 
-## Repertoire source & acknowledgements
+## Acknowledgements
 
-The repertoire is based on *Mayhem in the Morra* by **Marc Esserman** — with
-thanks to the author for the ideas behind these lines. It currently adapts the
-common lines from a selection of the book's chapters and is **not yet
-comprehensive**.
+The repertoire draws on ideas and selected lines from *Mayhem in the Morra*
+(2012) by **Marc Esserman** — with thanks to the author for the foundational
+work behind this opening. The lines have been modified and restructured
+through original analysis, rather than reproduced from the book.
+
+Coverage is not yet comprehensive and will continue to expand.
 
 ## Development
 
