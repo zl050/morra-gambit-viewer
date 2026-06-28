@@ -74,7 +74,7 @@
               <span class="tool-label">Search by move order or position</span>
             </button>
             <div id="search-row" class="tool-row" hidden>
-              <input id="search-input" class="tool-input" type="text" placeholder="Enter PGN or position (FEN)" aria-label="Search by PGN or position" />
+              <input id="search-input" class="tool-input" type="text" placeholder="Enter PGN or FEN" aria-label="Search by PGN or FEN" />
               <button id="search-go" class="tool-copy" type="button" title="Search" aria-label="Search">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polyline points="9 10 4 15 9 20" /><path d="M20 4v7a4 4 0 0 1-4 4H4" />
@@ -111,30 +111,14 @@
               </svg>
               <span id="quiz-exit-icon" class="quiz-exit-icon" aria-hidden="true" hidden>✕</span>
               <span class="tool-label">Quiz mode</span>
-              <span class="side-badge side-badge--white" aria-hidden="true">
-                <span class="side-coin">
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="7" r="3" /><path d="M9 12h6l1.5 4h-9z" /><rect x="6.5" y="17" width="11" height="2.5" rx="1" />
-                  </svg>
-                </span>
-                <span class="side-label">White</span>
-              </span>
             </button>
             <p id="quiz-status" class="tool-status" hidden></p>
 
-            <button id="challenge-bot" class="tool-bar" type="button" aria-label="Challenge lichess-bot — Black side" aria-expanded="false">
+            <button id="challenge-bot" class="tool-bar is-visually-disabled" type="button" aria-label="Challenge lichess-bot" aria-expanded="false">
               <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" /><line x1="13" x2="19" y1="19" y2="13" /><line x1="16" x2="20" y1="16" y2="20" /><line x1="19" x2="21" y1="21" y2="19" /><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" /><line x1="5" x2="9" y1="14" y2="18" /><line x1="7" x2="4" y1="17" y2="20" /><line x1="3" x2="5" y1="19" y2="21" />
               </svg>
               <span class="tool-label">Challenge lichess-bot</span>
-              <span class="side-badge side-badge--black" aria-hidden="true">
-                <span class="side-coin">
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="7" r="3" /><path d="M9 12h6l1.5 4h-9z" /><rect x="6.5" y="17" width="11" height="2.5" rx="1" />
-                  </svg>
-                </span>
-                <span class="side-label">Black</span>
-              </span>
             </button>
             <div id="challenge-row" class="tool-row" hidden>
               <p class="tool-text">Challenge <a href="https://lichess.org/@/HedgeKn1ght" target="_blank" rel="noopener noreferrer">HedgeKn1ght</a> and prove your defense!</p>

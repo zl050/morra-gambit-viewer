@@ -233,6 +233,24 @@ select {
   color: var(--mainline);
 }
 
+/* Non-clickable group dividers ("Accepted" / "Declined") in the chapter
+   picker — bold/uppercase/muted to read as a label, not a selectable row. */
+#chapter-select optgroup {
+  font-weight: 700;
+  font-style: normal;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+#chapter-select option {
+  color: var(--mainline);
+  font-weight: 400;
+  font-size: 1rem;
+  text-transform: none;
+}
+
 #description-text {
   margin: 0;
   padding: 12px 14px;
@@ -359,56 +377,10 @@ select {
   box-shadow: 0 0 0 2px var(--accent);
 }
 
-/* Side indicator (White / Black) on the Quiz-mode and Challenge-bot rows. */
-.side-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-  flex: 0 0 auto;
-}
-
-.side-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.side-coin {
-  display: grid;
-  place-items: center;
-  width: 27px;
-  height: 27px;
-  border: 1.5px solid;
-  border-radius: 50%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-}
-
-.side-coin svg {
-  width: 16px;
-  height: 16px;
-}
-
-.side-badge--white .side-coin {
-  background: #ffffff;
-  border-color: #2a2f35;
-}
-
-.side-badge--white .side-coin svg * {
-  fill: #2a2f35;
-  stroke: #2a2f35;
-}
-
-.side-badge--black .side-coin {
-  background: #23282e;
-  border-color: #23282e;
-}
-
-.side-badge--black .side-coin svg * {
-  fill: #eef1f4;
-  stroke: #eef1f4;
+/* Looks disabled like a real button:disabled, but stays clickable. */
+.tool-bar.is-visually-disabled {
+  cursor: default;
+  opacity: 0.45;
 }
 
 .tool-row {

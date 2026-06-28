@@ -440,12 +440,24 @@ async function init() {
   window.addEventListener('hashchange', restoreFromHash);
 }
 
+const CHAPTER_GROUP_BOUNDARIES = [
+  { beforeId: 'ch1', label: 'Accepted' },
+  { beforeId: 'ch12', label: 'Declined' },
+];
+
 function renderChapterOptions() {
+  let target = els.chapterSelect;
   for (const chapter of state.repertoire.chapters) {
+    const boundary = CHAPTER_GROUP_BOUNDARIES.find((item) => item.beforeId === chapter.id);
+    if (boundary) {
+      target = document.createElement('optgroup');
+      target.label = boundary.label;
+      els.chapterSelect.append(target);
+    }
     const option = document.createElement('option');
     option.value = chapter.id;
     option.textContent = chapter.title;
-    els.chapterSelect.append(option);
+    target.append(option);
   }
 }
 
